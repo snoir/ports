@@ -1,9 +1,9 @@
 # $FreeBSD$
 
 PORTNAME=	chezmoi
+DISTVERSIONPREFIX=	v
 DISTVERSION=	2.0.9
 CATEGORIES=	deskutils
-DISTVERSIONPREFIX=	v
 
 MAINTAINER=	samir@noir.im
 COMMENT=	Manage your dotfiles across multiple diverse machines, securely
@@ -109,14 +109,16 @@ GH_TUPLE=	\
 		zalando:go-keyring:v0.1.1:zalando_go_keyring/vendor/github.com/zalando/go-keyring \
 		DHowett:go-plist:1454fab16a06:go_plist/vendor/howett.net/plist
 
-PLIST_FILES=    bin/chezmoi
+PLIST_FILES=	bin/chezmoi
 
-OPTIONS_DEFINE=		BASH FISH ZSH
+OPTIONS_DEFINE=		BASH DOCS FISH ZSH
 OPTIONS_DEFAULT=	BASH FISH ZSH
 
+DOCS_PORTDOCS=		*
+
 BASH_PLIST_FILES=	etc/bash_completion.d/chezmoi
-ZSH_PLIST_FILES= 	share/zsh/site-functions/_chezmoi
-FISH_PLIST_FILES= 	share/fish/vendor_functions.d/chezmoi.fish
+FISH_PLIST_FILES=	share/fish/vendor_functions.d/chezmoi.fish
+ZSH_PLIST_FILES=	share/zsh/site-functions/_chezmoi
 
 post-extract:
 	@${MKDIR} ${WRKSRC}/vendor/github.com/chris-ramon
@@ -126,12 +128,17 @@ post-install-BASH-on:
 	@${MKDIR} ${STAGEDIR}${PREFIX}/etc/bash_completion.d
 	${INSTALL_DATA} ${WRKSRC}/completions/chezmoi-completion.bash ${STAGEDIR}${PREFIX}/etc/bash_completion.d/chezmoi
 
+post-install-FISH-on:
+	@${MKDIR} ${STAGEDIR}${PREFIX}/share/fish/vendor_functions.d
+	${INSTALL_DATA} ${WRKSRC}/completions/chezmoi.fish ${STAGEDIR}${PREFIX}/share/fish/vendor_functions.d/chezmoi.fish
+
 post-install-ZSH-on:
 	@${MKDIR} ${STAGEDIR}${PREFIX}/share/zsh/site-functions
 	${INSTALL_DATA} ${WRKSRC}/completions/chezmoi.zsh ${STAGEDIR}${PREFIX}/share/zsh/site-functions/_chezmoi
 
-post-install-FISH-on:
-	@${MKDIR} ${STAGEDIR}${PREFIX}/share/fish/vendor_functions.d
-	${INSTALL_DATA} ${WRKSRC}/completions/chezmoi.fish ${STAGEDIR}${PREFIX}/share/fish/vendor_functions.d/chezmoi.fish
+post-install-DOCS-on:
+	${MKDIR} ${STAGEDIR}${DOCSDIR}
+	(cd ${WRKSRC}/docs && ${COPYTREE_SHARE} . ${STAGEDIR}${DOCSDIR} \
+	    "! -name docs.go")
 
 .include <bsd.port.mk>
