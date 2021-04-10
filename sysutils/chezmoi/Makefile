@@ -3,7 +3,7 @@
 PORTNAME=	chezmoi
 DISTVERSIONPREFIX=	v
 DISTVERSION=	2.0.9
-CATEGORIES=	deskutils
+CATEGORIES=	sysutils
 
 MAINTAINER=	samir@noir.im
 COMMENT=	Manage your dotfiles across multiple diverse machines, securely
